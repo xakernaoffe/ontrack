@@ -1,0 +1,89 @@
+// I made an assumption that user may have multiple address books.
+// For handling errors API will respond with appropriate status code:
+//   - 4xx when request is invalid
+//   - 5xx if unexpected error happened during request processing
+// Response body for failed request will contain json with additional information:
+//   - errorCode - error code which gives a hint what went wrong.
+//   - errorMessage - message describing error
+
+// Minimal API for design address book:
+
+// 1) Create address book. As a payload json with address book name is expected
+POST http://localhost:8080/api/address-books
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "name": "Work contacts"
+}
+###
+
+// 2) List address books with posibility to filter by name.
+//    I make an assumption that amount of address books per user won't be great and pagination could be ommited
+GET http://localhost:8080/api/address-books?name={{name}}
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+###
+
+// 3) Update API for changing address book name by it's id
+PUT http://localhost:8080/api/address-books/{{address_book_id}}
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "name": "Updated address book"
+}
+###
+
+// 4) Delete API for deleting address book and all associated contacts
+DELETE http://localhost:8080/api/address-books/{{address_book_id}}
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+###
+
+// 5) Adding contact to address book
+POST http://localhost:8080/api/address-books/{{address_book_id}}/contacts
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "firstName": "John",
+  "lastName": "Snow",
+  "emaiil": "john.snow@mail.com"
+}
+###
+
+// Contacts API exposed under separate path /api/contacts.
+// Other option is to use hierarhical path eg /api/address-books/{id}/contacts/{contact_id}
+
+// 6) Searching contacts via GET endpoint with filter by address book id
+//    This API could be paginated and should allow filtering. Results returned in alphabetical order.
+//    Here represented simple filtering parameter but depending on requirements contacts could be filtered by individual fields etc
+GET http://localhost:8080/api/contacts?address_book={{address_book_id}}&limit=20&page=0&filter={{search_criteria}}}
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+###
+
+// 7) Get contact by id. This API could returned more detailed information about contact entity
+GET http://localhost:8080/api/contacts/{{contact_id}}
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+###
+
+// 8) Update contact
+PUT http://localhost:8080/api/contacts/{{contact_id}}
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "firstName": "John",
+  "lastName": "Snow",
+  "emaiil": "john.snow@mail.com"
+}
+###
+
+// 9) Delete contact by id
+DELETE http://localhost:8080/api/contacts/{{contact_id}}
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+###
